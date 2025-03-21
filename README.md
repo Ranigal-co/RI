@@ -1,2 +1,4 @@
 # RI
-Portfolio of Ranigal and Iliushenka
+Портфолио Ranigal и Iliushenka 
+
+Данный проект будет представлять собой сайт, демонстрирующий умения и навыки авторов проекта
