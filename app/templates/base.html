@@ -1,0 +1,23 @@
+<!--@Ranigal-co-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RI{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!--Здесь подключение стилей-->
+</head>
+<body>
+    {% include 'partials/header.html' %}
+    {% include 'partials/navigation.html' %}
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'partials/footer.html' %}
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <!--JS скрипты-->
+</body>
+</html>
