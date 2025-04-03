@@ -1,0 +1,36 @@
+# @Ranigal-co
+"""
+    Модели базы данных
+"""
+import datetime
+
+from app import db
+
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    link = db.Column(db.String(200))
+
+    def __repr__(self):
+        return f"Project('{self.title}', '{self.link}')"
+
+class Contact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
+
+    def to_dict(self):
+        """Метод для преобразования объекта в словарь"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'message': self.message,
+            'created_at': self.created_at.isoformat()
+        }
+
+    def __repr__(self):
+        return f"Contact('{self.name}', '{self.email}')"
