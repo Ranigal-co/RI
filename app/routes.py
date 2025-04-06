@@ -9,9 +9,15 @@ from app.models import Project, Contact, User
 from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from flask import abort
+from functools import wraps
+from flask import abort
 from app import db, bcrypt
 
 main_routes = Blueprint('main', __name__)
+
+"""
+    Главные руты
+"""
 
 @main_routes.route('/')
 @main_routes.route('/home')
@@ -49,7 +55,20 @@ def contact():
             flash(f'Ошибка: {str(e)}', 'error')
     return render_template('contact.html')
 
+"""
+    Функции админа
+"""
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
 @main_routes.route('/api/contacts', methods=['GET'])
+@admin_required # Проверка на админа
 def get_contacts():
     """Получение всех контактов в формате JSON"""
     try:
@@ -62,16 +81,22 @@ def get_contacts():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @main_routes.route('/admin/contacts')
+@admin_required
 def view_contacts():
     """Отображение всех контактов в HTML"""
     contacts = Contact.query.order_by(Contact.created_at.desc()).all()
     return render_template('admin/contacts.html', contacts=contacts)
 
 @main_routes.route('/admin/contacts/<int:contact_id>')
+@admin_required
 def view_contact(contact_id):
     """Отображение конкретного контакта"""
     contact = Contact.query.get_or_404(contact_id)
     return render_template('admin/contact_detail.html', contact=contact)
+
+"""
+    Взаимодействиея с профилем
+"""
 
 @main_routes.route('/register', methods=['GET', 'POST'])
 def register():
@@ -133,7 +158,10 @@ def login():
 @main_routes.route('/profile')
 @login_required
 def profile():
-    return render_template('user/profile.html', user=current_user)
+    admin_exists = User.query.filter_by(is_admin=True).first() is not None
+    return render_template('user/profile.html', 
+                         user=current_user,
+                         admin_exists=admin_exists)
 
 @main_routes.route('/logout')
 @login_required
@@ -141,8 +169,31 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
-# Защищенный маршрут - пример
-@main_routes.route('/protected')
+@main_routes.route('/make_admin', methods=['POST'])
 @login_required
-def protected():
-    return "Это защищенная страница, доступная только авторизованным пользователям!"
+def make_admin():
+    # Проверяем, есть ли уже администраторы
+    if User.query.filter_by(is_admin=True).first():
+        flash('Администратор уже существует', 'warning')
+        return redirect(url_for('main.profile'))
+    
+    username = request.form.get('admin_username')
+    
+    # Проверяем, что текущий пользователь пытается назначить самого себя
+    if username != current_user.username:
+        flash('Вы можете назначить только себя администратором', 'danger')
+        return redirect(url_for('main.profile'))
+    
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.is_admin = True
+        db.session.commit()
+        flash(f'Пользователь {username} теперь администратор', 'success')
+    else:
+        flash('Пользователь не найден', 'danger')
+    
+    return redirect(url_for('main.profile'))
+
+@main_routes.errorhandler(403)
+def forbidden(error):
+    return render_template('errors/403.html'), 403

@@ -1,6 +1,7 @@
 __pycache__
 .venv
 my_vs_start
+instance/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

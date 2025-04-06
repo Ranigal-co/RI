@@ -31,6 +31,17 @@
                     <a class="nav-item nav-link" href="{{ url_for('main.login') }}">Войти</a>
                     <a class="nav-item nav-link" href="{{ url_for('main.register') }}">Регистрация</a>
                 {% endif %}
+
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown">
+                        Админ-панель
+                        </a>
+                        <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ url_for('main.view_contacts') }}">Контакты</a>
+                        </div>
+                    </li>
+                {% endif %}
             </div>
         </div>
     </nav>

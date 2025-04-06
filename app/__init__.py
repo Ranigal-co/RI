@@ -1,19 +1,22 @@
 # @Ranigal-co
 """
     Логика и все необходимое для запуска сервера
+    Чтобы сделать себя админом создай файл .env и напиши там это:
+    FIRST_ADMIN_USERNAME=Имя
+    FIRST_ADMIN_EMAIL=Почта
+    FIRST_ADMIN_PASSWORD=Пароль
+    И потом на сайте сможешь зайти в админку
 """
 
-from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
-
-db = SQLAlchemy()
-bcrypt = Bcrypt()
-login_manager = LoginManager()
+from flask import Flask
+from app.extensions import db, bcrypt, login_manager
+import os
+from config import DevelopmentConfig
+from dotenv import load_dotenv
+load_dotenv()
 
 
-def create_app():
+def create_app(config_class=DevelopmentConfig):
     """Главный объект сервера"""
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'dJSBDBkBKJbKJFBkBkJBfKBFfKJdbksjf'
@@ -24,7 +27,6 @@ def create_app():
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
-
     login_manager.login_view = 'main.login'
 
     from app.models import Project, Contact, User
@@ -35,8 +37,32 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        create_first_admin(app)
 
     from app.routes import main_routes
     app.register_blueprint(main_routes)
 
     return app
+
+def create_first_admin(app):
+    """Создает первого администратора"""
+    from app.models import User
+    
+    if not User.query.filter_by(is_admin=True).first():
+        if not app.config['FIRST_ADMIN_PASSWORD']:
+            print("Пароль администратора не задан в .env")
+            return
+            
+        if User.query.filter_by(username=app.config['FIRST_ADMIN_USERNAME']).first():
+            print("Пользователь с таким именем уже существует")
+            return
+            
+        admin = User(
+            username=app.config['FIRST_ADMIN_USERNAME'],
+            email=app.config['FIRST_ADMIN_EMAIL'],
+            password=bcrypt.generate_password_hash(app.config['FIRST_ADMIN_PASSWORD']).decode('utf-8'),
+            is_admin=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print(f"Создан первый администратор: {app.config['FIRST_ADMIN_USERNAME']}")
