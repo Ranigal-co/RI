@@ -2,6 +2,7 @@
 """
     Логика и все необходимое для запуска сервера
     Чтобы сделать себя админом создай файл .env и напиши там это:
+    SECRET_KEY=сгенирируй его в tests/__init__.py
     FIRST_ADMIN_USERNAME=Имя
     FIRST_ADMIN_EMAIL=Почта
     FIRST_ADMIN_PASSWORD=Пароль
@@ -10,20 +11,16 @@
 
 from flask import Flask
 from app.extensions import db, bcrypt, login_manager
-import os
 from config import DevelopmentConfig
-from dotenv import load_dotenv
-load_dotenv()
-
 
 def create_app(config_class=DevelopmentConfig):
     """Главный объект сервера"""
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'dJSBDBkBKJbKJFBkBkJBfKBFfKJdbksjf'
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+    
+    # Загружаем конфигурацию из класса Config
+    app.config.from_object(config_class)
+    
+    # Инициализация расширений
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
@@ -49,7 +46,7 @@ def create_first_admin(app):
     from app.models import User
     
     if not User.query.filter_by(is_admin=True).first():
-        if not app.config['FIRST_ADMIN_PASSWORD']:
+        if not app.config.get('FIRST_ADMIN_PASSWORD'):
             print("Пароль администратора не задан в .env")
             return
             
