@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Профиль{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="text-center">Профиль пользователя</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Информация о пользователе</h5>
+                <p class="card-text"><strong>Имя пользователя:</strong> {{ user.username }}</p>
+                <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+                <a href="{{ url_for('main.protected') }}" class="btn btn-primary">Защищенная страница</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
