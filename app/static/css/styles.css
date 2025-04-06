@@ -1,0 +1,21 @@
+/* Стили для горизонтального меню */
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.nav-item {
+    margin-right: 15px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    color: #ccc;
+}
