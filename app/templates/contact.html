@@ -1,7 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %}Контакты{% endblock %}
+{% block title %}Свяжитесь с нами{% endblock %}
 
 {% block content %}
-    <h1>Наши контакты</h1>
+    <h3>Заполните форму для отправки</h3>
+    <form method="POST" action="{{ url_for('main.contact') }}">
+    <div>
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+        <label for="message">Сообщение:</label>
+        <textarea id="message" name="message" required></textarea>
+    </div>
+    <button type="submit">Отправить</button>
+</form>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="flash-message">
+            {{ messages[0] }}
+        </div>
+    {% endif %}
+{% endwith %}
 {% endblock %}

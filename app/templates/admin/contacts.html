@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if current_user.is_admin %}
+  <!-- Показываем контент только админу -->
+  <h1>Список контактов</h1>
+  <table class="table">
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Имя</th>
+              <th>Email</th>
+              <th>Дата</th>
+              <th>Действия</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for contact in contacts %}
+          <tr>
+              <td>{{ contact.id }}</td>
+              <td>{{ contact.name }}</td>
+              <td>{{ contact.email }}</td>
+              <td>{{ contact.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>
+                  <a href="{{ url_for('main.view_contact', contact_id=contact.id) }}" class="btn btn-info btn-sm">Просмотр</a>
+              </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+{% else %}
+  <p>У вас нет прав для просмотра этой страницы</p>
+{% endif %}
+{% endblock %}

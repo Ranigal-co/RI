@@ -1,23 +1,80 @@
-<!--@Ranigal-co-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}RI{% endblock %}</title>
+    <!-- Основные стили -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Дополнительные стили -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <!--Здесь подключение стилей-->
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Навигация из второго шаблона с адаптацией -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">RI</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Основное меню из partials/navigation.html можно добавить здесь -->
+            {% include 'partials/navigation.html' %}
+            
+            <!-- Меню аутентификации -->
+            <div class="navbar-nav ml-auto">
+                {% if current_user.is_authenticated %}
+                    <a class="nav-item nav-link" href="{{ url_for('main.profile') }}">Профиль</a>
+                    <a class="nav-item nav-link" href="{{ url_for('main.logout') }}">Выйти</a>
+                {% else %}
+                    <a class="nav-item nav-link" href="{{ url_for('main.login') }}">Войти</a>
+                    <a class="nav-item nav-link" href="{{ url_for('main.register') }}">Регистрация</a>
+                {% endif %}
+
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown">
+                        Админ-панель
+                        </a>
+                        <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ url_for('main.view_contacts') }}">Контакты</a>
+                        </div>
+                    </li>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Шапка из partials/header.html -->
     {% include 'partials/header.html' %}
-    {% include 'partials/navigation.html' %}
-    
-    <main>
+
+    <main class="container mt-4">
+        <!-- Система уведомлений -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Основное содержимое -->
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Подвал -->
     {% include 'partials/footer.html' %}
+
+    <!-- Основные скрипты -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Дополнительные скрипты -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    <!--JS скрипты-->
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
