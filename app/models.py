@@ -28,7 +28,7 @@ class Project(db.Model):
             "id": self.id,
             "title": self.title,
             "description": self.description,
-            "link": self.id
+            "link": self.link
         }
 
     def __repr__(self):
@@ -39,7 +39,7 @@ class Contact(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now())
 
     def to_dict(self):
         """Метод для преобразования объекта в словарь"""

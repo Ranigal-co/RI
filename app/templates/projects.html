@@ -3,5 +3,16 @@
 {% block title %}Проекты{% endblock %}
 
 {% block content %}
-    <h1>Наши проекты, можно красиво по карточкам сделать</h1>
+    <div class="bouncy-text">
+        <h1>{{ page }}</h1>
+    </div>
+    {% for project in projects %}
+        <div class="project" data-link="{{ project['link'] }}">
+            <h1>{{ project["title"] }}</h1>
+            <h1>{{ project["description"] }}</h1>
+        </div>
+    {% endfor %}
+    <form class="nav-center" method="post">
+        <button id="next-page" name="action" value="next_page">Следующая страница</button>
+    </form>
 {% endblock %}

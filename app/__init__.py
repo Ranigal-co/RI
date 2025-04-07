@@ -11,6 +11,7 @@
 
 from flask import Flask
 from app.extensions import db, bcrypt, login_manager
+from .utils.ready_projects import registry
 from config import DevelopmentConfig
 
 def create_app(config_class=DevelopmentConfig):
@@ -62,4 +63,8 @@ def create_first_admin(app):
         )
         db.session.add(admin)
         db.session.commit()
+
+        registry()
+
         print(f"Создан первый администратор: {app.config['FIRST_ADMIN_USERNAME']}")
+        print("Проекты загружены!")

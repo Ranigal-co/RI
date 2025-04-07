@@ -6,6 +6,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 from app.models import Project, Contact, User
+from .utils.ready_projects import getProjects
 from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from flask import abort
@@ -28,10 +29,31 @@ def index():
 def about():
     return render_template('about.html')
 
-@main_routes.route('/projects')
+@main_routes.route('/projects', methods=["GET", "POST"])
 def projects():
-    projects = Project.query.all()
-    return render_template('projects.html', projects=projects)
+    page = request.args.get('page', 0)
+    try:
+        page = max(0, int(page))
+    except ValueError:
+        page = 0
+    values = getProjects(page)
+    if request.method == "GET":
+        params = dict()
+
+        params["projects"] = values
+        params["page"] = f"Номер страницы {page}"
+        return render_template('projects.html', **params)
+    action = request.form.get("action")
+    if action == "next_page":
+        return redirect(url_for("main.projects") + f"?page={page + 1}")
+    elif action == "open_link":
+        link = request.form.get("data_link")
+        return redirect(url_for("main.project") + f"?link={link}")
+
+@main_routes.route("/project")
+def project():
+    return "helllooo!"
+
 
 @main_routes.route('/contact', methods=['GET', 'POST'])
 def contact():
