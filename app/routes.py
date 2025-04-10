@@ -197,3 +197,19 @@ def make_admin():
 @main_routes.errorhandler(403)
 def forbidden(error):
     return render_template('errors/403.html'), 403
+
+@main_routes.route('/set_theme', methods=['POST'])
+@login_required
+def set_theme():
+    theme = request.json.get('theme')
+    if theme in ['light', 'dark']:
+        current_user.theme_preference = theme
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'images': {
+                'header_bg': url_for('static', filename=f'images/anime-bg-{theme}.jpg'),
+                'logo': url_for('static', filename=f'images/logo-{theme}.png')
+            }
+        })
+    return jsonify({'success': False}), 400

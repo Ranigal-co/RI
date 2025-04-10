@@ -1,5 +1,63 @@
 <!-- templates/partials/header.html -->
 <header>
-    <h1>RI</h1>
-    <p>Добро пожаловать!</p>
+    <a class="header-ico" href="{{ url_for('main.index') }}">
+        <img src="{{ url_for('static', filename='images/favicon.ico') }}" 
+             alt="Логотип"
+             class="floating-icon">
+    </a>
 </header>
+
+<style>
+    /* Стили для иконки */
+    .header-ico {
+        position: fixed;
+        top: 70px; /* Отступ под навигационной панелью */
+        right: 20px;
+        z-index: 1000;
+        display: block;
+        transition: all 0.3s ease;
+    }
+    
+    .floating-icon {
+        width: 35px; /* Начальный размер */
+        height: 35px;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+    }
+    
+    .header-ico:hover .floating-icon {
+        width: 40px; /* Размер при наведении */
+        height: 40px;
+        transform: scale(1.1);
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    }
+    
+    /* Анимация плавающего эффекта */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .floating-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    /* Для мобильных устройств */
+    @media (max-width: 768px) {
+        .header-ico {
+            top: 60px;
+            right: 15px;
+        }
+        
+        .floating-icon {
+            width: 25px;
+            height: 25px;
+        }
+        
+        .header-ico:hover .floating-icon {
+            width: 30px;
+            height: 30px;
+        }
+    }
+</style>

@@ -1,9 +1,72 @@
 <!-- templates/partials/footer.html -->
-<!-- Это что снизу под сайтом пишут про права и контакты -->
-<footer>
-    <p>&copy; 2025 RI. Все права защищены.</p>
-    <div class="social-links">
-        <a href="">Telegram</a> <!-- Ссылка на тг, лучше на тг-бота, чтобы не спамили -->
-        <a href="https://github.com/Ranigal-co/RI.git">GitHub</a> <!-- Ссылка на наш проект на Github -->
+<footer class="site-footer">
+    <div class="footer-content container">
+        <p>&copy; 2025 RI. Все права защищены.</p>
+        <div class="social-links">
+            <a href="" target="_blank">Telegram</a>
+            <a href="https://github.com/Ranigal-co/RI.git" target="_blank">GitHub</a>
+        </div>
     </div>
 </footer>
+
+<style>
+    /* Основные стили для подвала */
+    .site-footer {
+        background-color: var(--footer-bg);
+        color: white;
+        padding: 1.5rem 0;
+        margin-top: auto; /* Ключевое свойство для прижатия к низу */
+        position: relative;
+        width: 100%;
+    }
+    
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .social-links a {
+        color: white;
+        margin-left: 1.5rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .social-links a:hover {
+        color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+    
+    /* Для основного layout */
+    html, body {
+        height: 100%;
+    }
+    
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    
+    main {
+        flex: 1;
+    }
+    
+    /* Адаптация для мобильных */
+    @media (max-width: 768px) {
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .social-links {
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            margin: 0 0.75rem;
+        }
+    }
+</style>

@@ -3,27 +3,101 @@
 {% block title %}Свяжитесь с нами{% endblock %}
 
 {% block content %}
-    <h3>Заполните форму для отправки</h3>
-    <form method="POST" action="{{ url_for('main.contact') }}">
-    <div>
-        <label for="name">Имя:</label>
-        <input type="text" id="name" name="name" required>
-    </div>
-    <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-    </div>
-    <div>
-        <label for="message">Сообщение:</label>
-        <textarea id="message" name="message" required></textarea>
-    </div>
-    <button type="submit">Отправить</button>
-</form>
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <div class="flash-message">
-            {{ messages[0] }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card contact-form-card">
+                <div class="card-header">
+                    <h3 class="text-center mb-0 text-white">Заполните форму для отправки</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.contact') }}">
+                        <div class="form-group">
+                            <label for="name">Имя:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Сообщение:</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-block submit-btn">Отправить ✉️</button>
+                    </form>
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} mt-3">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </div>
-    {% endif %}
-{% endwith %}
+    </div>
+</div>
+
+<style>
+    .contact-form-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background-color: var(--card-bg);
+        margin-top: 2rem;
+    }
+    
+    .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        border-bottom: 3px solid var(--accent-color);
+        padding: 1.5rem;
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .card-body {
+        padding: 2rem;
+    }
+    
+    .form-control {
+        background-color: var(--input-bg);
+        border: 2px solid var(--border-color) !important;
+        color: white;
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: var(--accent-color) !important;
+        box-shadow: 0 0 0 3px rgba(255, 101, 163, 0.3);
+    }
+    
+    .submit-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        margin-top: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .submit-btn:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    label {
+        color: var(--primary-color);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+</style>
 {% endblock %}

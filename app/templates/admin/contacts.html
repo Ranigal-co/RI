@@ -1,34 +1,94 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if current_user.is_admin %}
-  <!-- Показываем контент только админу -->
-  <h1>Список контактов</h1>
-  <table class="table">
-      <thead>
-          <tr>
-              <th>ID</th>
-              <th>Имя</th>
-              <th>Email</th>
-              <th>Дата</th>
-              <th>Действия</th>
-          </tr>
-      </thead>
-      <tbody>
-          {% for contact in contacts %}
-          <tr>
-              <td>{{ contact.id }}</td>
-              <td>{{ contact.name }}</td>
-              <td>{{ contact.email }}</td>
-              <td>{{ contact.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-              <td>
-                  <a href="{{ url_for('main.view_contact', contact_id=contact.id) }}" class="btn btn-info btn-sm">Просмотр</a>
-              </td>
-          </tr>
-          {% endfor %}
-      </tbody>
-  </table>
-{% else %}
-  <p>У вас нет прав для просмотра этой страницы</p>
-{% endif %}
+<div class="container">
+    {% if current_user.is_admin %}
+    <h1 class="mb-4">Список контактов</h1>
+    
+    <div class="row">
+        {% for contact in contacts %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card contact-card h-100">
+                <div class="card-header" style="background-color: var(--primary-color); color: white;">
+                    <h5 class="card-title mb-0">{{ contact.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="contact-info mb-3">
+                        <p class="mb-1"><strong>📧 Email:</strong> {{ contact.email }}</p>
+                        <p class="mb-1"><strong>📅 Дата:</strong> {{ contact.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p class="mb-0"><strong>🆔 ID:</strong> {{ contact.id }}</p>
+                    </div>
+                    
+                    <div class="message-preview">
+                        <p class="text-muted mb-2"><strong>Сообщение:</strong></p>
+                        <div class="message-content" style="
+                            max-height: 100px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            /* -webkit-line-clamp: 3; */
+                            -webkit-box-orient: vertical;
+                        ">
+                            {{ contact.message }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('main.view_contact', contact_id=contact.id) }}" 
+                       class="btn btn-sm btn-block" 
+                       style="background-color: var(--primary-color); color: white;">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% else %}
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Доступ запрещен</h4>
+        <p>У вас нет прав для просмотра этой страницы.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .contact-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        background-color: var(--card-bg);
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header {
+        border-bottom: 2px solid var(--accent-color);
+    }
+    
+    .contact-info p {
+        margin-bottom: 0.5rem;
+    }
+    
+    .message-content {
+        color: var(--text-color);
+        padding: 8px;
+        background-color: var(--input-bg);
+        border-radius: 8px;
+        border-left: 3px solid var(--accent-color);
+    }
+    
+    @media (max-width: 768px) {
+        .col-md-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+</style>
 {% endblock %}
