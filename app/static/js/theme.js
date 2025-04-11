@@ -39,9 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateThemeImages(theme) {
         const root = document.documentElement;
         if (theme === 'dark') {
-            root.style.setProperty('--header-bg-image', `url("${window.location.origin}/static/images/anime-bg-dark.png")`);
+            root.style.setProperty('--header-bg-image', `url("${window.location.origin}/static/images/backgrounds/anime-bg-dark.png")`);
         } else {
-            root.style.setProperty('--header-bg-image', `url("${window.location.origin}/static/images/anime-bg-light.png")`);
+            root.style.setProperty('--header-bg-image', `url("${window.location.origin}/static/images/backgrounds/anime-bg-light.png")`);
         }
     }
 });

@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Дополнительные стили -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}">
     <style>
         :root {
-        --header-bg-image: url("{{ url_for('static', filename='images/anime-bg-' + ('light' if current_user.is_authenticated and current_user.theme_preference == 'light' else 'dark') + '.png') }}");
+        --header-bg-image: url("{{ url_for('static', filename='images/backgrounds/anime-bg-' + ('light' if current_user.is_authenticated and current_user.theme_preference == 'light' else 'dark') + '.png') }}");
         }
     </style>
     {% block extra_css %}{% endblock %}
