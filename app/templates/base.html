@@ -4,32 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}RI{% endblock %}</title>
-    <!-- Основные стили -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <!-- Preconnect to CDN for faster loading -->
+    <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
+    
+    <!-- Основные стили с fallback -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      data-fallback="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+      onerror="this.onerror=null;this.href=this.getAttribute('data-fallback');">
+    
     <!-- Дополнительные стили -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}">
+    
+    <!-- Минимальные стили для навигации (на случай недоступности Bootstrap) -->
+    <noscript>
+        <style>
+            .navbar-fallback {
+                display: flex;
+                justify-content: space-between;
+                padding: 1rem;
+                background: #343a40;
+                color: white;
+            }
+            .navbar-fallback a {
+                color: white;
+                margin: 0 10px;
+                text-decoration: none;
+            }
+            .navbar-fallback a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </noscript>
+    
     <style>
         :root {
-        --header-bg-image: url("{{ url_for('static', filename='images/backgrounds/anime-bg-' + ('light' if current_user.is_authenticated and current_user.theme_preference == 'light' else 'dark') + '.png') }}");
+            --header-bg-image: url("{{ url_for('static', filename='images/backgrounds/anime-bg-' + ('light' if current_user.is_authenticated and current_user.theme_preference == 'light' else 'dark') + '.png') }}");
+        }
+        
+        /* Минимальные стили для навигации */
+        .navbar-fallback {
+            display: none; /* По умолчанию скрыто */
+            justify-content: space-between;
+            padding: 1rem;
+            background: #343a40;
+            color: white;
+        }
+        .navbar-fallback a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .navbar-fallback a:hover {
+            text-decoration: underline;
         }
     </style>
+    
     {% block extra_css %}{% endblock %}
-    <script src="static/js/script.js" defer></script>
 </head>
 <body class="{% if current_user.is_authenticated and current_user.theme_preference == 'light' %}light-theme{% else %}dark-theme{% endif %}">
-    <!-- Навигация из второго шаблона с адаптацией -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- Навигация с fallback -->
+    <div id="navbar-fallback" class="navbar-fallback">
+        <a href="{{ url_for('main.index') }}">RI</a>
+        <div>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.profile') }}">Профиль</a>
+                <a href="{{ url_for('main.logout') }}">Выйти</a>
+            {% else %}
+                <a href="{{ url_for('main.login') }}">Войти</a>
+                <a href="{{ url_for('main.register') }}">Регистрация</a>
+            {% endif %}
+            <button id="theme-toggle-fallback">🌙 Тема</button>
+        </div>
+    </div>
+
+    <!-- Основная навигация Bootstrap -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="main-navbar">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">RI</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
         </button>
         
         <div class="collapse navbar-collapse" id="navbarContent">
-            <!-- Основное меню из partials/navigation.html можно добавить здесь -->
             {% include 'partials/navigation.html' %}
             
-            <!-- Меню аутентификации -->
             <div class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
                     <a class="nav-item nav-link" href="{{ url_for('main.profile') }}">Профиль</a>
@@ -61,11 +120,11 @@
         </div>
     </nav>
 
-    <!-- Шапка из partials/header.html -->
+    <!-- Шапка -->
     {% include 'partials/header.html' %}
 
     <main class="container mt-4">
-        <!-- Система уведомлений -->
+        <!-- Уведомления -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -83,11 +142,49 @@
     <!-- Подвал -->
     {% include 'partials/footer.html' %}
 
-    <!-- Основные скрипты -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Скрипты с fallback -->
+    <script>
+        // Функция для проверки загрузки Bootstrap
+        function isBootstrapLoaded() {
+            return typeof $().modal === 'function' && 
+                   typeof $().dropdown === 'function' && 
+                   typeof $().collapse === 'function';
+        }
+        
+        // Проверка через 2 секунды после загрузки страницы
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (!isBootstrapLoaded()) {
+                    document.getElementById('main-navbar').style.display = 'none';
+                    document.getElementById('navbar-fallback').style.display = 'flex';
+                    
+                    // Загружаем локальные скрипты
+                    loadLocalScript('{{ url_for("static", filename="js/jquery.min.js") }}');
+                    loadLocalScript('{{ url_for("static", filename="js/popper.min.js") }}');
+                    loadLocalScript('{{ url_for("static", filename="js/bootstrap.min.js") }}');
+                }
+            }, 2000);
+        });
+        
+        function loadLocalScript(src) {
+            var script = document.createElement('script');
+            script.src = src;
+            document.body.appendChild(script);
+        }
+    </script>
     
+    <!-- Основные скрипты с fallback -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        data-fallback="{{ url_for('static', filename='js/jquery.min.js') }}"
+        onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            data-fallback="{{ url_for('static', filename='js/popper.min.js') }}"
+            onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            data-fallback="{{ url_for('static', filename='js/bootstrap.min.js') }}"
+            onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');"></script>
     <!-- Дополнительные скрипты -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
