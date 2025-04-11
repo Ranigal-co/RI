@@ -15,6 +15,7 @@
         }
     </style>
     {% block extra_css %}{% endblock %}
+    <script src="static/js/script.js" defer></script>
 </head>
 <body class="{% if current_user.is_authenticated and current_user.theme_preference == 'light' %}light-theme{% else %}dark-theme{% endif %}">
     <!-- Навигация из второго шаблона с адаптацией -->
@@ -40,14 +41,16 @@
 
                 {% if current_user.is_authenticated and current_user.is_admin %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown">
                             <span class="admin-icon">👑</span> Админ-панель
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="adminDropdown">
+                        <div class="dropdown-menu" dropdown-menu-right" aria-labelledby="adminDropdown">
                             <a class="dropdown-item" href="{{ url_for('main.view_contacts') }}">
                                 <span class="dropdown-icon">📩</span> Просмотр контактов
                             </a>
-                            <!-- Можно добавить другие пункты меню -->
+                            <a class="dropdown-item" href="{{ url_for('main.add_project') }}">
+                                <span class="dropdown-icon">👾</span> Добавить проект
+                            </a>
                         </div>
                     </li>
                 {% endif %}

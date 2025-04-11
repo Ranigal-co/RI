@@ -6,6 +6,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 from app.models import Project, Contact, User
+from .utils.ready_projects import getProjects
 from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from flask import abort
@@ -28,10 +29,37 @@ def index():
 def about():
     return render_template('about.html')
 
-@main_routes.route('/projects')
+@main_routes.route('/projects', methods=["GET", "POST"])
 def projects():
-    projects = Project.query.all()
-    return render_template('projects.html', projects=projects)
+    page = request.args.get('page', 0)
+    try:
+        page_number = max(0, int(page))
+    except ValueError:
+        page_number = 0
+        
+    values = getProjects(page_number)
+    
+    if request.method == "GET":
+        params = {
+            "projects": values,
+            "page": f"Номер страницы {page_number}",
+            "page_number": page_number  # Добавляем номер страницы в контекст
+        }
+        return render_template('projects.html', **params)
+        
+    action = request.form.get("action")
+    if action == "next_page":
+        return redirect(url_for("main.projects") + f"?page={page_number + 1}")
+    elif action == "prev_page":
+        return redirect(url_for("main.projects") + f"?page={max(0, page_number - 1)}")
+    elif action == "open_link":
+        link = request.form.get("data_link")
+        return redirect(url_for("main.project") + f"?link={link}")
+
+@main_routes.route("/project")
+def project():
+    return "helllooo!"
+
 
 @main_routes.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -93,6 +121,30 @@ def view_contact(contact_id):
     """Отображение конкретного контакта"""
     contact = Contact.query.get_or_404(contact_id)
     return render_template('admin/contact_detail.html', contact=contact)
+
+@main_routes.route('/admin/projects/add', methods=['GET', 'POST'])
+@admin_required
+def add_project():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        link = request.form.get('link')
+
+        if not all([title, description, link]):
+            flash('Все поля обязательны для заполнения', 'error')
+            return redirect(url_for('main.add_project'))
+
+        try:
+            new_project = Project(title=title, description=description, link=link)
+            db.session.add(new_project)
+            db.session.commit()
+            flash('Проект успешно добавлен!', 'success')
+            return redirect(url_for('main.projects'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ошибка: {str(e)}', 'error')
+    
+    return render_template('admin/add_project.html')
 
 """
     Взаимодействиея с профилем
