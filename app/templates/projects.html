@@ -3,16 +3,136 @@
 {% block title %}Проекты{% endblock %}
 
 {% block content %}
-    <div class="bouncy-text">
-        <h1>{{ page }}</h1>
+<div class="container anime-container">
+    <!-- Заголовок с анимацией -->
+    <div class="anime-header text-center mb-5">
+        <h1 class="bouncy-text">{{ page }}</h1>
     </div>
-    {% for project in projects %}
-        <div class="project" data-link="{{ project['link'] }}">
-            <h1>{{ project["title"] }}</h1>
-            <h1>{{ project["description"] }}</h1>
+    
+    {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="text-right mb-4">
+            <a href="{{ url_for('main.add_project') }}" class="btn anime-btn btn-accent">
+                <i class="fas fa-plus mr-2"></i>Добавить проект
+            </a>
         </div>
-    {% endfor %}
-    <form class="nav-center" method="post">
-        <button id="next-page" name="action" value="next_page">Следующая страница</button>
-    </form>
+    {% endif %}
+    
+    <!-- Сетка проектов -->
+    <div class="anime-projects-grid">
+        {% for project in projects %}
+            <a href="{{ project['link'] }}" class="project-link-wrapper">
+                <div class="anime-project-card">
+                    <div class="project-content">
+                        <h3 class="project-title">{{ project.title }}</h3>
+                        <p class="project-description">{{ project.description }}</p>
+                        <div class="project-cta">Подробнее →</div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    
+    <!-- Навигация -->
+    <div class="anime-pagination mt-4">
+        <form method="post" class="d-flex justify-content-between">
+            {% if page_number > 0 %}
+                <button name="action" value="prev_page" class="btn anime-btn">
+                    <i class="fas fa-arrow-left mr-2"></i>Назад
+                </button>
+            {% else %}
+                <div></div>
+            {% endif %}
+            <button name="action" value="next_page" class="btn anime-btn">
+                Вперёд <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .anime-container {
+        padding: 2rem;
+        max-width: 1200px;
+    }
+    
+    .anime-projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .anime-project-card {
+        background: rgba(var(--card-bg-rgb), 0.8);
+        backdrop-filter: blur(5px);
+        border-radius: 15px;
+        border: 1px solid var(--border-color);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .anime-project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        border-color: var(--accent-color);
+    }
+    
+    .project-title {
+        color: var(--primary-color);
+        font-family: 'Comic Sans MS', cursive;
+        margin-bottom: 1rem;
+    }
+    
+    .project-description {
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .project-link {
+        color: var(--link-color);
+        font-weight: 600;
+        text-align: right;
+        transition: all 0.3s;
+    }
+    
+    .anime-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s;
+    }
+    
+    .anime-btn:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-3px);
+    }
+    
+    .bouncy-text {
+        animation: bounce 2s infinite;
+    }
+
+    .project-link-wrapper {
+        text-decoration: none;
+        display: block;
+        color: inherit;
+    }
+    
+    .anime-project-card {
+        /* ваши существующие стили */
+        transition: all 0.3s ease;
+    }
+    
+    .anime-project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
 {% endblock %}

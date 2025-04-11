@@ -36,10 +36,11 @@
                 {% if current_user.is_authenticated and current_user.is_admin %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown">
-                        Админ-панель
+                            Админ-панель
                         </a>
                         <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{{ url_for('main.view_contacts') }}">Контакты</a>
+                            <a class="dropdown-item" href="{{ url_for('main.view_contacts') }}">Контакты</a>
+                            <a class="dropdown-item" href="{{ url_for('main.add_project') }}">Добавить проект</a>
                         </div>
                     </li>
                 {% endif %}
