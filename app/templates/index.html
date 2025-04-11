@@ -1,7 +1,382 @@
 {% extends "base.html" %}
 
-{% block title %}Главная{% endblock %}
+{% block extra_css %}
+<style>
+    /* Добавляем стили для полупрозрачного холста */
+    .content-background {
+        position: relative;
+        min-height: calc(100vh - 120px);
+        padding: 2rem 0;
+    }
+    
+    .content-background::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(var(--bg-color-rgb), 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 0;
+        border-radius: 15px;
+        margin: 0 1rem;
+    }
+    
+    /* Позиционируем основной контент */
+    .presentation-container {
+        position: relative;
+        z-index: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    /* Обновляем стили для стеклянных карточек */
+    .glass-card {
+        background: rgba(var(--card-bg-rgb), 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+        margin-bottom: 2rem;
+    }
+    
+    /* Добавляем переменные для rgba */
+    :root {
+        --card-bg-rgb: 255, 255, 255;
+        --bg-color-rgb: 249, 244, 249;
+    }
+    
+    .dark-theme {
+        --card-bg-rgb: 22, 33, 62;
+        --bg-color-rgb: 26, 26, 46;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-    <h1>Контент новой страницы</h1>
+<div class="presentation-container">
+    <!-- Секция героя -->
+    <section class="hero-section glass-card">
+        <div class="hero-content">
+            <h1 class="hero-title">Добро пожаловать в RI</h1>
+            <p class="hero-subtitle">Сайт Ranigal & Iliushenka</p>
+            <a href="#features" class="btn hero-btn">Узнать больше</a>
+        </div>
+        <div class="hero-image">
+            <img src="{{ url_for('static', filename='images/icons/html.ico') }}" alt="Главное изображение" class="floating">
+        </div>
+    </section>
+
+    <!-- Секция возможностей -->
+    <section id="features" class="features-section">
+        <div class="features-grid">
+            <!-- Карточка 1 -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <img src="{{ url_for('static', filename='images/icons/meha_1.ico') }}" alt="Иконка">
+                </div>
+                <h3>Мы программисты</h3>
+                <p>Любим качество и эффективность в своих работах</p>
+                <a href="{{ url_for('main.projects') }}" class="feature-link">Посмотреть проекты →</a>
+            </div>
+            
+            <!-- Карточка 2 -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <img src="{{ url_for('static', filename='images/icons/meha_2.ico') }}" alt="Иконка">
+                </div>
+                <h3>Гибкие настройки</h3>
+                <p>Умеем делать красиво и понятно</p>
+                <a href="{{ url_for('main.about') }}" class="feature-link">Подробнее →</a>
+            </div>
+            
+            <!-- Карточка 3 -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <img src="{{ url_for('static', filename='images/icons/meha_3.ico') }}" alt="Иконка">
+                </div>
+                <h3>Структурированность и расширяемость</h3>
+                <p>Учитываем перспективы и удобство для масштабирования задач</p>
+                <a href="{{ url_for('main.contact') }}" class="feature-link">Связаться →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция с призывом к действию -->
+    <section class="cta-section glass-card">
+        <div class="cta-content">
+            <h2>Готовы погрузиться в секреты этого сайта?</h2>
+            <p>Предлагаем начать с регистрации</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('main.register') }}" class="btn cta-btn-primary">Регистрация</a>
+                <a href="{{ url_for('main.login') }}" class="btn cta-btn-secondary">Войти</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    /* Основные стили презентации */
+    .presentation-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    /* Секция героя */
+    .hero-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4rem;
+        flex-wrap: wrap;
+    }
+    
+    .hero-content {
+        flex: 1;
+        min-width: 300px;
+        padding-right: 2rem;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-family: 'Comic Sans MS', cursive;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-color);
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .hero-btn {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .hero-btn:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .hero-image {
+        flex: 1;
+        min-width: 300px;
+        text-align: center;
+    }
+    
+    .hero-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Секция возможностей */
+    .features-section {
+        margin-bottom: 4rem;
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 3rem;
+        font-family: 'Comic Sans MS', cursive;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .feature-card {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        padding: 2rem;
+        transition: transform 0.3s, box-shadow 0.3s;
+        text-align: center;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-icon img {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-card h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card p {
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-link {
+        color: var(--link-color);
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .feature-link:hover {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+    
+    /* Секция CTA */
+    .cta-section {
+        background-color: var(--primary-color);
+        padding: 3rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .cta-section h2 {
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .cta-btn-primary {
+        background-color: white;
+        color: var(--primary-color);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .cta-btn-primary:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .cta-btn-secondary {
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .cta-btn-secondary:hover {
+        background-color: white;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+    
+    /* Анимации */
+    .floating {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    /* Адаптация для мобильных */
+    @media (max-width: 768px) {
+        .hero-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .hero-content {
+            padding-right: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    .glass-card {
+        background: rgba(var(--card-bg-rgb), 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    }
+
+    main {
+        position: relative;
+        z-index: 1;
+    }
+
+    header {
+        background-color: transparent;
+        position: relative;
+    }
+
+    body {
+        background-attachment: fixed;
+        background-size: cover;
+        position: relative;
+    }
+    
+    body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--header-bg-image) no-repeat center center;
+        background-size: cover;
+        z-index: -2;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Корректировка высоты при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const navHeight = document.querySelector('nav').offsetHeight;
+        const footerHeight = document.querySelector('footer').offsetHeight;
+        document.querySelector('.content-background').style.minHeight = 
+            `calc(100vh - ${navHeight + footerHeight}px)`;
+    });
+</script>
 {% endblock %}

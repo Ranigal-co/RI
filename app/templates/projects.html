@@ -3,5 +3,17 @@
 {% block title %}Проекты{% endblock %}
 
 {% block content %}
-    <h1>Наши проекты, можно красиво по карточкам сделать</h1>
+    <h1>Наши проекты</h1>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card floating">
+                <img src="/static/images/project1.jpg" class="card-img-top" alt="Проект 1">
+                <div class="card-body">
+                    <h5 class="card-title">Аниме-сообщество</h5>
+                    <p class="card-text">Платформа для общения фанатов аниме с персонализированными профилями.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Добавьте больше карточек -->
+    </div>
 {% endblock %}
