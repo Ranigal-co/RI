@@ -104,6 +104,53 @@
         </div>
     </section>
 
+    <section class="hero-section glass-card">
+        <div class="hero-content">
+            <h1 class="hero-title">Вы можете здесь найти</h1>
+            <div class="about-us">
+                <p>Мы - Ranigal и Iliushenka, два увлеченных разработчика, объединивших свои силы для создания интересных и инновационных проектов.</p>
+                
+                <div class="developer-card">
+                    <h3>Ranigal</h3>
+                    <p>Специалист по фронтенд-разработке с особым вниманием к деталям интерфейса. Автор бэкенда этого сайта. Эксперт в оптимизации кода для работы на маломощном железе. Увлекаюсь:</p>
+                    <ul>
+                        <li>Созданием адаптивных и интуитивных интерфейсов</li>
+                        <li>Оптимизацией производительности приложений</li>
+                        <li>Разработкой компактных и эффективных ML-моделей</li>
+                        <li>Альтернативными архитектурными решениями</li>
+                    </ul>
+                </div>
+                
+                <div class="developer-card">
+                    <h3>Iliushenka</h3>
+                    <p>Backend-разработчик с глубокими знаниями Python и Java. Создатель собственных библиотек и архитектурных решений. Исследователь в области:</p>
+                    <ul>
+                        <li>Нейронных сетей и инновационных подходов в ML</li>
+                        <li>Серверной логики и API-разработки</li>
+                        <li>Оптимизации алгоритмов</li>
+                        <li>Системного программирования</li>
+                    </ul>
+                </div>
+                
+                <div class="our-skills">
+                    <h3>Наши ключевые навыки:</h3>
+                    <div class="skills-grid">
+                        <span class="skill-badge">Python (PyQt, Pygame)</span>
+                        <span class="skill-badge">Flask</span>
+                        <span class="skill-badge">SQL</span>
+                        <span class="skill-badge">API разработка</span>
+                        <span class="skill-badge">HTML/CSS</span>
+                        <span class="skill-badge">Git</span>
+                        <span class="skill-badge">Оптимизация кода</span>
+                        <span class="skill-badge">Нейронные сети</span>
+                    </div>
+                </div>
+                
+                <p class="our-mission">Наша миссия - разрабатывать быстро, на основе эффективных готовых решений, где каждый проект не просто код, а независимая экосистема, такая же красивая как наша планета.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Секция с призывом к действию -->
     <section class="cta-section glass-card">
         <div class="cta-content">
@@ -337,6 +384,62 @@
         border-radius: 15px;
         border: 1px solid rgba(255, 255, 255, 0.18);
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    }
+
+    /* О нас */
+    .about-us {
+    padding: 1.5rem;
+    color: var(--text-color);
+    }
+
+    .developer-card {
+        background: rgba(var(--card-bg-rgb), 0.5);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .developer-card h3 {
+        color: var(--accent-color);
+        border-bottom: none;
+        margin-bottom: 0.5rem;
+    }
+
+    .developer-card ul {
+        padding-left: 1.5rem;
+        margin-top: 0.8rem;
+    }
+
+    .developer-card li {
+        margin-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .skills-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin: 1rem 0;
+    }
+
+    .skill-badge {
+        background: rgba(var(--primary-color-rgb), 0.2);
+        color: var(--primary-color);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid var(--primary-color);
+    }
+
+    .our-mission {
+        font-style: italic;
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(var(--accent-color-rgb), 0.1);
+        border-radius: 8px;
+        border-left: 3px solid var(--accent-color);
     }
 
     main {

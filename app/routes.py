@@ -56,24 +56,25 @@ def projects():
         link = request.form.get("data_link")
         return redirect(url_for("main.project") + f"?link={link}")
 
-@main_routes.route("/project")
-def project():
-    return "helllooo!"
-
-
 @main_routes.route('/contact', methods=['GET', 'POST'])
 def contact():
+    if not current_user.is_authenticated:
+        flash('Для отправки сообщения необходимо авторизоваться', 'warning')
+        return redirect(url_for('main.login'))
+    
     if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
         message = request.form.get('message')
 
-        if not all([name, email, message]):
-            flash('Все поля обязательны для заполнения', 'error')
+        if not message:
+            flash('Сообщение не может быть пустым', 'error')
             return redirect(url_for('main.contact'))
 
         try:
-            new_contact = Contact(name=name, email=email, message=message)
+            new_contact = Contact(
+                name=current_user.username,
+                email=current_user.email,
+                message=message
+            )
             db.session.add(new_contact)
             db.session.commit()
             flash('Сообщение успешно отправлено!', 'success')

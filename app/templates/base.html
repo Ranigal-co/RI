@@ -18,48 +18,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}">
     
     <!-- Минимальные стили для навигации (на случай недоступности Bootstrap) -->
-    <noscript>
-        <style>
-            .navbar-fallback {
-                display: flex;
-                justify-content: space-between;
-                padding: 1rem;
-                background: #343a40;
-                color: white;
-            }
-            .navbar-fallback a {
-                color: white;
-                margin: 0 10px;
-                text-decoration: none;
-            }
-            .navbar-fallback a:hover {
-                text-decoration: underline;
-            }
-        </style>
-    </noscript>
-    
-    <style>
-        :root {
-            --header-bg-image: url("{{ url_for('static', filename='images/backgrounds/anime-bg-' + ('light' if current_user.is_authenticated and current_user.theme_preference == 'light' else 'dark') + '.png') }}");
-        }
-        
-        /* Минимальные стили для навигации */
-        .navbar-fallback {
-            display: none; /* По умолчанию скрыто */
-            justify-content: space-between;
-            padding: 1rem;
-            background: #343a40;
-            color: white;
-        }
-        .navbar-fallback a {
-            color: white;
-            margin: 0 10px;
-            text-decoration: none;
-        }
-        .navbar-fallback a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    {% include 'partials/noscript.html' %}
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -143,35 +102,7 @@
     {% include 'partials/footer.html' %}
 
     <!-- Скрипты с fallback -->
-    <script>
-        // Функция для проверки загрузки Bootstrap
-        function isBootstrapLoaded() {
-            return typeof $().modal === 'function' && 
-                   typeof $().dropdown === 'function' && 
-                   typeof $().collapse === 'function';
-        }
-        
-        // Проверка через 2 секунды после загрузки страницы
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                if (!isBootstrapLoaded()) {
-                    document.getElementById('main-navbar').style.display = 'none';
-                    document.getElementById('navbar-fallback').style.display = 'flex';
-                    
-                    // Загружаем локальные скрипты
-                    loadLocalScript('{{ url_for("static", filename="js/jquery.min.js") }}');
-                    loadLocalScript('{{ url_for("static", filename="js/popper.min.js") }}');
-                    loadLocalScript('{{ url_for("static", filename="js/bootstrap.min.js") }}');
-                }
-            }, 2000);
-        });
-        
-        function loadLocalScript(src) {
-            var script = document.createElement('script');
-            script.src = src;
-            document.body.appendChild(script);
-        }
-    </script>
+    {% include 'partials/fallback.html' %}
     
     <!-- Основные скрипты с fallback -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

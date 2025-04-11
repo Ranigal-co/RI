@@ -1,0 +1,42 @@
+<noscript>
+    <style>
+        .navbar-fallback {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #343a40;
+            color: white;
+        }
+        .navbar-fallback a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .navbar-fallback a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</noscript>
+
+<style>
+    :root {
+        --header-bg-image: url("{{ url_for('static', filename='images/backgrounds/anime-bg-' + ('light' if current_user.is_authenticated and current_user.theme_preference == 'light' else 'dark') + '.png') }}");
+    }
+    
+    /* Минимальные стили для навигации */
+    .navbar-fallback {
+        display: none; /* По умолчанию скрыто */
+        justify-content: space-between;
+        padding: 1rem;
+        background: #343a40;
+        color: white;
+    }
+    .navbar-fallback a {
+        color: white;
+        margin: 0 10px;
+        text-decoration: none;
+    }
+    .navbar-fallback a:hover {
+        text-decoration: underline;
+    }
+</style>
