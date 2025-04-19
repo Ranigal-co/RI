@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     theme_preference = db.Column(db.String(10), default='dark')
+    avatar = db.Column(db.String(100), default='default-avatar.jpg')
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', admin={self.is_admin})"

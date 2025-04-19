@@ -2,27 +2,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
     
-    // Проверяем сохранённую тему
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
+    // Определяем текущую тему из класса body
+    const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+    setTheme(currentTheme);
     
     // Обработчик клика
     themeToggle.addEventListener('click', function() {
-        const currentTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
-        setTheme(currentTheme);
-        localStorage.setItem('theme', currentTheme);
-    });
-    
-    function setTheme(theme) {
-        if (theme === 'dark') {
-            document.body.classList.add('dark-theme');
-            themeIcon.textContent = '☀️';
-            updateThemeImages('dark');
-        } else {
-            document.body.classList.remove('dark-theme');
-            themeIcon.textContent = '🌙';
-            updateThemeImages('light');
-        }
+        const newTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
         
         // Отправляем на сервер, если пользователь авторизован
         if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
@@ -31,17 +19,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ theme: theme })
+                body: JSON.stringify({ theme: newTheme })
             });
         }
+    });
+    
+    function setTheme(theme) {
+        // Удаляем оба класса на случай, если какой-то уже есть
+        document.body.classList.remove('dark-theme', 'light-theme');
+        
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            if (themeIcon) themeIcon.textContent = '☀️';
+        } else {
+            document.body.classList.add('light-theme');
+            if (themeIcon) themeIcon.textContent = '🌙';
+        }
+        
+        updateThemeImages(theme);
     }
     
     function updateThemeImages(theme) {
         const root = document.documentElement;
-        if (theme === 'dark') {
-            root.style.setProperty('--header-bg-image', `url("${window.location.origin}/static/images/backgrounds/anime-bg-dark.png")`);
-        } else {
-            root.style.setProperty('--header-bg-image', `url("${window.location.origin}/static/images/backgrounds/anime-bg-light.png")`);
-        }
+        const bgImage = theme === 'dark' 
+            ? 'url("/static/images/backgrounds/anime-bg-dark.png")' 
+            : 'url("/static/images/backgrounds/anime-bg-light.png")';
+        root.style.setProperty('--header-bg-image', bgImage);
     }
 });

@@ -12,6 +12,7 @@
 from flask import Flask
 from app.extensions import db, bcrypt, login_manager
 from config import DevelopmentConfig
+import os
 
 def create_app(config_class=DevelopmentConfig):
     """Главный объект сервера"""
@@ -25,6 +26,8 @@ def create_app(config_class=DevelopmentConfig):
     bcrypt.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'main.login'
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     from app.models import Project, Contact, User
 

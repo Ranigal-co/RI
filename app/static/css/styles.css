@@ -26,7 +26,7 @@
 }
 
 /* Основные аниме-стили */
-:root {
+.light-theme {
     /* Светлая тема (аниме-стиль) */
     --bg-color: #f9f4f9;
     --text-color: #3a2e3a;
@@ -415,4 +415,11 @@ footer::before {
 
 .bouncy-text:hover {
   animation: bounce-twice 1s ease;
+}
+
+.rounded-circle {
+    border: 3px solid var(--primary-color);
+    object-fit: cover;
+    transition: all 0.3s;
+    background-color: #f8f9fa; /* Фон на случай если изображение не загрузится */
 }

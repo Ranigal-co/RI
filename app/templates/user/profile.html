@@ -5,12 +5,80 @@
     <div class="col-md-8">
         <h2 class="text-center">Профиль пользователя</h2>
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Информация о пользователе</h5>
-                <p class="card-text"><strong>Имя пользователя:</strong> {{ user.username }}</p>
-                <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+            <div class="card-body text-center">
+                <!-- Аватарка -->
+                <div class="mb-4">
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + user.avatar) if user.avatar else url_for('static', filename='images/default-avatar.jpg') }}" 
+                         class="rounded-circle" 
+                         width="150" 
+                         height="150"
+                         alt="Аватар"
+                         data-fallback="{{ url_for('static', filename='images/default-avatar.jpg') }}"
+                         onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');">
+                </div>
+                
+                <!-- Форма загрузки -->
+                <form method="post" enctype="multipart/form-data" action="{{ url_for('main.upload_avatar') }}">
+                    <div class="form-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="avatarUpload" name="file" accept="image/*">
+                            <label class="custom-file-label" for="avatarUpload">Выберите файл (PNG, JPG)</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Загрузить</button>
+                </form>
+                
+                <!-- Информация -->
+                <div class="mt-4">
+                    <h5 class="card-title">Информация о пользователе</h5>
+                    <p class="card-text"><strong>Имя пользователя:</strong> {{ user.username }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+// Показываем имя выбранного файла
+document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+    var fileName = e.target.files[0].name;
+    var nextSibling = e.target.nextElementSibling;
+    nextSibling.innerText = fileName;
+});
+</script>
+
+<style>
+    /* Аватарки */
+    .rounded-circle {
+        border: 3px solid var(--primary-color);
+        object-fit: cover;
+        transition: all 0.3s;
+    }
+
+    .rounded-circle:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .custom-file-input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .custom-file-label {
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        background-color: var(--button-bg);
+        color: white;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+    .custom-file-label:hover {
+        background-color: var(--accent-color);
+    }
+</style>
 {% endblock %}
