@@ -6,12 +6,17 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 from app.models import Project, Contact, User
+from .utils.ready_projects import getProjects
 from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from flask import abort
 from functools import wraps
 from flask import abort
 from app import db, bcrypt
+from flask import current_app
+import os
+from werkzeug.utils import secure_filename
+from config import Config
 
 main_routes = Blueprint('main', __name__)
 
@@ -28,24 +33,52 @@ def index():
 def about():
     return render_template('about.html')
 
-@main_routes.route('/projects')
+@main_routes.route('/projects', methods=["GET", "POST"])
 def projects():
-    projects = Project.query.all()
-    return render_template('projects.html', projects=projects)
+    page = request.args.get('page', 0)
+    try:
+        page_number = max(0, int(page))
+    except ValueError:
+        page_number = 0
+        
+    values = getProjects(page_number)
+    
+    if request.method == "GET":
+        params = {
+            "projects": values,
+            "page": f"Номер страницы {page_number}",
+            "page_number": page_number  # Добавляем номер страницы в контекст
+        }
+        return render_template('projects.html', **params)
+        
+    action = request.form.get("action")
+    if action == "next_page":
+        return redirect(url_for("main.projects") + f"?page={page_number + 1}")
+    elif action == "prev_page":
+        return redirect(url_for("main.projects") + f"?page={max(0, page_number - 1)}")
+    elif action == "open_link":
+        link = request.form.get("data_link")
+        return redirect(url_for("main.project") + f"?link={link}")
 
 @main_routes.route('/contact', methods=['GET', 'POST'])
 def contact():
+    if not current_user.is_authenticated:
+        flash('Для отправки сообщения необходимо авторизоваться', 'warning')
+        return redirect(url_for('main.login'))
+    
     if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
         message = request.form.get('message')
 
-        if not all([name, email, message]):
-            flash('Все поля обязательны для заполнения', 'error')
+        if not message:
+            flash('Сообщение не может быть пустым', 'error')
             return redirect(url_for('main.contact'))
 
         try:
-            new_contact = Contact(name=name, email=email, message=message)
+            new_contact = Contact(
+                name=current_user.username,
+                email=current_user.email,
+                message=message
+            )
             db.session.add(new_contact)
             db.session.commit()
             flash('Сообщение успешно отправлено!', 'success')
@@ -93,6 +126,30 @@ def view_contact(contact_id):
     """Отображение конкретного контакта"""
     contact = Contact.query.get_or_404(contact_id)
     return render_template('admin/contact_detail.html', contact=contact)
+
+@main_routes.route('/admin/projects/add', methods=['GET', 'POST'])
+@admin_required
+def add_project():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        link = request.form.get('link')
+
+        if not all([title, description, link]):
+            flash('Все поля обязательны для заполнения', 'error')
+            return redirect(url_for('main.add_project'))
+
+        try:
+            new_project = Project(title=title, description=description, link=link)
+            db.session.add(new_project)
+            db.session.commit()
+            flash('Проект успешно добавлен!', 'success')
+            return redirect(url_for('main.projects'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ошибка: {str(e)}', 'error')
+    
+    return render_template('admin/add_project.html')
 
 """
     Взаимодействиея с профилем
@@ -213,3 +270,49 @@ def set_theme():
             }
         })
     return jsonify({'success': False}), 400
+
+def allowed_file(filename):
+    """Проверка разрешенных расширений файлов"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+@main_routes.route('/upload_avatar', methods=['POST'])
+@login_required
+def upload_avatar():
+    if 'file' not in request.files:
+        flash('Файл не выбран', 'error')
+        return redirect(url_for('main.profile'))
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        flash('Не выбран файл', 'error')
+        return redirect(url_for('main.profile'))
+    
+    if not file or not allowed_file(file.filename):
+        flash('Недопустимый формат файла', 'error')
+        return redirect(url_for('main.profile'))
+    
+    try:
+        # Создаем папку avatars если её нет
+        avatars_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
+        os.makedirs(avatars_dir, exist_ok=True)
+        
+        # Генерируем имя файла
+        ext = file.filename.rsplit('.', 1)[1].lower()
+        filename = f"user_{current_user.id}.{ext}"
+        filepath = os.path.join(avatars_dir, filename)
+        
+        # Сохраняем файл
+        file.save(filepath)
+        
+        # Обновляем БД
+        current_user.avatar = filename
+        db.session.commit()
+        flash('Аватар успешно обновлен!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Ошибка загрузки аватара: {str(e)}")
+        flash('Ошибка при загрузке аватара', 'error')
+    
+    return redirect(url_for('main.profile'))

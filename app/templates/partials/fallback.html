@@ -1,0 +1,29 @@
+<script>
+    // Функция для проверки загрузки Bootstrap
+    function isBootstrapLoaded() {
+        return typeof $().modal === 'function' && 
+               typeof $().dropdown === 'function' && 
+               typeof $().collapse === 'function';
+    }
+    
+    // Проверка через 2 секунды после загрузки страницы
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            if (!isBootstrapLoaded()) {
+                document.getElementById('main-navbar').style.display = 'none';
+                document.getElementById('navbar-fallback').style.display = 'flex';
+                
+                // Загружаем локальные скрипты
+                loadLocalScript('{{ url_for("static", filename="js/jquery.min.js") }}');
+                loadLocalScript('{{ url_for("static", filename="js/popper.min.js") }}');
+                loadLocalScript('{{ url_for("static", filename="js/bootstrap.min.js") }}');
+            }
+        }, 2000);
+    });
+    
+    function loadLocalScript(src) {
+        var script = document.createElement('script');
+        script.src = src;
+        document.body.appendChild(script);
+    }
+</script>

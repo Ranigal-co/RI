@@ -26,7 +26,7 @@
 }
 
 /* Основные аниме-стили */
-:root {
+.light-theme {
     /* Светлая тема (аниме-стиль) */
     --bg-color: #f9f4f9;
     --text-color: #3a2e3a;
@@ -378,4 +378,48 @@ footer::before {
 
 .card-header h3 {
     color: white !important;
+}
+
+.nav-page {
+    padding-left: center;
+    padding-right: center;
+    text-align: center;
+}
+
+.project {
+    position: relative;
+    background: #000000;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+    border: 1px solid #e5e5e5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-height: 100px;
+    cursor: pointer;
+}
+
+.project:hover {
+    box-shadow: -5px 5px 15px rgba(255, 0, 0, 0.32);
+    transform: translateY(-10px);
+}
+
+.bouncy-text {
+    transition: transform 0.3s ease;
+    padding-left: center;
+    padding-right: center;
+    text-align: center;
+}
+
+.bouncy-text:hover {
+  animation: bounce-twice 1s ease;
+}
+
+.rounded-circle {
+    border: 3px solid var(--primary-color);
+    object-fit: cover;
+    transition: all 0.3s;
+    background-color: #f8f9fa; /* Фон на случай если изображение не загрузится */
 }
