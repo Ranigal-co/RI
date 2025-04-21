@@ -32,6 +32,11 @@ class Project(db.Model):
             "description": self.description,
             "link": self.link
         }
+    
+    def delete(self):
+        """Удаляет текущий проект из базы данных"""
+        db.session.delete(self)
+        db.session.commit()
 
     def __repr__(self):
         return f"Project('{self.title}', '{self.link}')"

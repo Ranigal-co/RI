@@ -316,3 +316,16 @@ def upload_avatar():
         flash('Ошибка при загрузке аватара', 'error')
     
     return redirect(url_for('main.profile'))
+
+@main_routes.route('/admin/projects/delete/<int:project_id>', methods=['POST'])
+@admin_required
+def delete_project(project_id):
+    project = Project.query.get_or_404(project_id)
+    try:
+        db.session.delete(project)
+        db.session.commit()
+        flash('Проект успешно удален!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Ошибка при удалении проекта: {str(e)}', 'error')
+    return redirect(url_for('main.projects'))

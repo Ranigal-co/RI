@@ -20,15 +20,24 @@
     <!-- Сетка проектов -->
     <div class="anime-projects-grid">
         {% for project in projects %}
-            <a href="{{ project['link'] }}" class="project-link-wrapper">
-                <div class="anime-project-card">
-                    <div class="project-content">
-                        <h3 class="project-title">{{ project.title }}</h3>
-                        <p class="project-description">{{ project.description }}</p>
-                        <div class="project-cta">Подробнее →</div>
+            <div class="anime-project-card-wrapper">
+                <a href="{{ project['link'] }}" class="project-link-wrapper">
+                    <div class="anime-project-card">
+                        <div class="project-content">
+                            <h3 class="project-title">{{ project.title }}</h3>
+                            <p class="project-description">{{ project.description }}</p>
+                            <div class="project-cta">Подробнее →</div>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                    <form method="POST" action="{{ url_for('main.delete_project', project_id=project.id) }}" class="delete-form">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этот проект?')">
+                            <i class="fas fa-trash"></i> Удалить
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
         {% endfor %}
     </div>
     
@@ -61,6 +70,17 @@
         gap: 1.5rem;
     }
     
+    .anime-project-card-wrapper {
+        position: relative;
+    }
+    
+    .delete-form {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+    }
+    
     .anime-project-card {
         background: rgba(var(--card-bg-rgb), 0.8);
         backdrop-filter: blur(5px);
@@ -89,7 +109,7 @@
         margin-bottom: 1.5rem;
     }
     
-    .project-link {
+    .project-cta {
         color: var(--link-color);
         font-weight: 600;
         text-align: right;
@@ -118,16 +138,6 @@
         text-decoration: none;
         display: block;
         color: inherit;
-    }
-    
-    .anime-project-card {
-        /* ваши существующие стили */
-        transition: all 0.3s ease;
-    }
-    
-    .anime-project-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
     
     @keyframes bounce {
