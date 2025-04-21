@@ -16,13 +16,17 @@
     <!-- Дополнительные стили -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}">
+
+    <!-- Фон -->
+    <link rel="preload" href="{{ url_for('static', filename='images/backgrounds/anime-bg-dark.png') }}" as="image">
+    <link rel="preload" href="{{ url_for('static', filename='images/backgrounds/anime-bg-light.png') }}" as="image">
     
     <!-- Минимальные стили для навигации (на случай недоступности Bootstrap) -->
     {% include 'partials/noscript.html' %}
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="{% if current_user.is_authenticated and current_user.theme_preference == 'light' %}light-theme{% else %}dark-theme{% endif %}">
+<body class="{% if current_user.is_authenticated and current_user.theme_preference %}{{ current_user.theme_preference }}-theme{% else %}dark-theme{% endif %}">
     <!-- Навигация с fallback -->
     <div id="navbar-fallback" class="navbar-fallback">
         <a href="{{ url_for('main.index') }}">RI</a>

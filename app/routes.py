@@ -13,6 +13,10 @@ from flask import abort
 from functools import wraps
 from flask import abort
 from app import db, bcrypt
+from flask import current_app
+import os
+from werkzeug.utils import secure_filename
+from config import Config
 
 main_routes = Blueprint('main', __name__)
 
@@ -266,3 +270,49 @@ def set_theme():
             }
         })
     return jsonify({'success': False}), 400
+
+def allowed_file(filename):
+    """Проверка разрешенных расширений файлов"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+@main_routes.route('/upload_avatar', methods=['POST'])
+@login_required
+def upload_avatar():
+    if 'file' not in request.files:
+        flash('Файл не выбран', 'error')
+        return redirect(url_for('main.profile'))
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        flash('Не выбран файл', 'error')
+        return redirect(url_for('main.profile'))
+    
+    if not file or not allowed_file(file.filename):
+        flash('Недопустимый формат файла', 'error')
+        return redirect(url_for('main.profile'))
+    
+    try:
+        # Создаем папку avatars если её нет
+        avatars_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
+        os.makedirs(avatars_dir, exist_ok=True)
+        
+        # Генерируем имя файла
+        ext = file.filename.rsplit('.', 1)[1].lower()
+        filename = f"user_{current_user.id}.{ext}"
+        filepath = os.path.join(avatars_dir, filename)
+        
+        # Сохраняем файл
+        file.save(filepath)
+        
+        # Обновляем БД
+        current_user.avatar = filename
+        db.session.commit()
+        flash('Аватар успешно обновлен!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Ошибка загрузки аватара: {str(e)}")
+        flash('Ошибка при загрузке аватара', 'error')
+    
+    return redirect(url_for('main.profile'))
