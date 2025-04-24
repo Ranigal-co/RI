@@ -29,7 +29,7 @@ def create_app(config_class=DevelopmentConfig):
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-    from app.models import Project, Contact, User
+    from app.models import Project, Contact, User, ApiKey
 
     @login_manager.user_loader
     def load_user(user_id):
