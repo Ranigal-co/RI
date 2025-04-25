@@ -7,6 +7,14 @@
 - Python
 - Flask
 - Flask-sqlalchemy
+- Bootstrap
+- requirements.txt
+- Шаблоны
+- ORM-модели(sqlite)
+- Регистрация и авторизация
+- Загрузка и использование файлов
+- API
+- База данных sqlite
 
 Задачи:
 - Работющий сайт с несколькими страничками +
