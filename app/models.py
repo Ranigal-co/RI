@@ -18,6 +18,22 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', admin={self.is_admin})"
 
+
+class ApiKey(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128), nullable=False)
+    key = db.Column(db.String(128), nullable=False)
+    action = db.Column(db.Integer, nullable=False)
+
+    def to_dict(self):
+        """Метод для преобразования объекта в словарь"""
+        return {
+            "id": self.id,
+            "title": self.title,
+            "key": self.key,
+            "action": self.action,
+        }
+
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)

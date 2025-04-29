@@ -5,8 +5,9 @@
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
-from app.models import Project, Contact, User
+from app.models import Project, Contact, User, ApiKey
 from .utils.ready_projects import getProjects
+from .utils.utilApi import get
 from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from flask import abort
@@ -28,6 +29,59 @@ main_routes = Blueprint('main', __name__)
 @main_routes.route('/home')
 def index():
     return render_template('index.html')
+
+@main_routes.route("/api", methods=['GET', 'POST'])
+def api():
+    page = request.args.get('page', 0)
+    try:
+        page_number = int(page)
+    except Exception:
+        page_number = 0
+    if request.method == "GET":
+        api_key = request.args.get('key', 'create')
+        if api_key == 'create':
+            if not current_user.is_authenticated:
+                flash('Для работы с ключами API необходимо авторизироваться', 'warning')
+                return redirect(url_for('main.login'))
+
+            values = get(page_number)
+
+            params = {
+                "apis": values,
+                "page": f"Номер страницы {page_number}",
+                "page_number": page_number  # Добавляем номер страницы в контекст
+            }
+            return render_template('api.html', **params)
+        else:
+            api_key = ApiKey.query.filter_by(key=api_key).first()
+            try:
+                action = api_key.action
+                if action == 1:
+                    contacts = Contact.query.order_by(Contact.created_at.desc()).all()
+                    return jsonify({
+                        'success': True,
+                        'contacts': [contact.to_dict() for contact in contacts]
+                    })
+                return jsonify({
+                    'success': False,
+                    'reason': "Wrong action in API key"
+                })
+            except Exception as e:
+                return jsonify({
+                    'success': False,
+                    'reason': "Wrong API key",
+                    'error': str(e)
+                }), 500
+
+    action = request.form.get("action")
+    if action == "next_page":
+        return redirect(url_for("main.api") + f"?page={page_number + 1}")
+    elif action == "prev_page":
+        return redirect(url_for("main.api") + f"?page={max(0, page_number - 1)}")
+    elif action == "open_link":
+        link = request.form.get("data_link")
+        return redirect(url_for("main.api") + f"?page={link}")
+
 
 @main_routes.route('/about')
 def about():
@@ -100,18 +154,29 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@main_routes.route('/api/contacts', methods=['GET'])
-@admin_required # Проверка на админа
-def get_contacts():
-    """Получение всех контактов в формате JSON"""
+@main_routes.route('/admin/api/add', methods=["GET", "POST"])
+@admin_required
+def add_api():
+    if request.method == "GET":
+        return render_template("admin/add_api.html")
+    title = request.form.get('title')
+    key = request.form.get('key')
+    action = request.form.get('action')
+
+    if not all([title, key, action]):
+        flash('Все поля обязательны для заполнения', 'error')
+        return redirect(url_for('main.add_api'))
+
     try:
-        contacts = Contact.query.order_by(Contact.created_at.desc()).all()
-        return jsonify({
-            'success': True,
-            'contacts': [contact.to_dict() for contact in contacts]
-        })
-    except SQLAlchemyError as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        new_api = ApiKey(title=title, key=key, action=int(action))
+        db.session.add(new_api)
+        db.session.commit()
+        flash('API ключ успешно добавлен!', 'success')
+        return redirect(url_for('main.api'))
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Ошибка: {str(e)}', 'error')
+    return render_template('admin/add_api.html')
 
 @main_routes.route('/admin/contacts')
 @admin_required

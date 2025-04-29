@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Проекты{% endblock %}
+{% block title %}Свяжитесь с нами{% endblock %}
 
 {% block content %}
 <div class="container anime-container">
@@ -8,35 +8,26 @@
     <div class="anime-header text-center mb-5">
         <h1 class="bouncy-text">{{ page }}</h1>
     </div>
-    
+
     {% if current_user.is_authenticated and current_user.is_admin %}
         <div class="text-right mb-4">
-            <a href="{{ url_for('main.add_project') }}" class="btn anime-btn btn-accent">
-                <i class="fas fa-plus mr-2"></i>Добавить проект
+            <a href="{{ url_for('main.add_api') }}" class="btn anime-btn btn-accent">
+                <i class="fas fa-plus mr-2"></i>Добавить API-ключ
             </a>
         </div>
     {% endif %}
 
-    <!-- Сетка проектов -->
-    <div class="anime-projects-grid">
-        {% for project in projects %}
-            <div class="anime-project-card-wrapper">
-                <a href="{{ project['link'] }}" class="project-link-wrapper">
-                    <div class="anime-project-card">
-                        <div class="project-content">
-                            <h3 class="project-title">{{ project.title }}</h3>
-                            <p class="project-description">{{ project.description }}</p>
-                            <div class="project-cta">Подробнее →</div>
+    <div class="anime-apis-grid">
+        {% for api in apis %}
+            <div class="anime-api-card-wrapper">
+                <a href="{{ url_for('main.api') }}?key={{ api.key }}" class="api-link-wrapper">
+                    <div class="anime-api-card">
+                        <div class="api-content">
+                            <h3 class="api-title">{{ api.title }}</h3>
+                            <p class="api-description">{{ api.key }}</p>
                         </div>
                     </div>
                 </a>
-                {% if current_user.is_authenticated and current_user.is_admin %}
-                    <form method="POST" action="{{ url_for('main.delete_project', project_id=project.id) }}" class="delete-form">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этот проект?')">
-                            <i class="fas fa-trash"></i> Удалить
-                        </button>
-                    </form>
-                {% endif %}
             </div>
         {% endfor %}
     </div>
@@ -64,13 +55,13 @@
         max-width: 1200px;
     }
 
-    .anime-projects-grid {
+    .anime-apis-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 1.5rem;
     }
 
-    .anime-project-card-wrapper {
+    .anime-api-card-wrapper {
         position: relative;
     }
 
@@ -81,7 +72,7 @@
         z-index: 10;
     }
 
-    .anime-project-card {
+    .anime-api-card {
         background: rgba(var(--card-bg-rgb), 0.8);
         backdrop-filter: blur(5px);
         border-radius: 15px;
@@ -92,24 +83,24 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .anime-project-card:hover {
+    .anime-api-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         border-color: var(--accent-color);
     }
 
-    .project-title {
+    .api-title {
         color: var(--primary-color);
         font-family: 'Comic Sans MS', cursive;
         margin-bottom: 1rem;
     }
 
-    .project-description {
+    .api-description {
         color: var(--text-color);
         margin-bottom: 1.5rem;
     }
 
-    .project-cta {
+    .api-cta {
         color: var(--link-color);
         font-weight: 600;
         text-align: right;
@@ -134,12 +125,12 @@
         animation: bounce 2s infinite;
     }
 
-    .project-link-wrapper {
+    .api-link-wrapper {
         text-decoration: none;
         display: block;
         color: inherit;
     }
-    
+
     @keyframes bounce {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
